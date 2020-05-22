@@ -19,40 +19,38 @@ def scraper
   pagination_start = 1
 
   while pagination_start < (max_pagination + 1)
-    main_url = "https://annuaire.118000.fr/v_meriel_95/#{pagination_start}"
+    main_url = "#{@url}/#{pagination_start}"
     main_html_doc = Nokogiri::HTML(open(main_url))
-    plusgros = main_html_doc.css('div.plusgros')
-    if plusgros
-      pagination_start += 1
-    else
-      main_article = main_html_doc.css('article')
-      names = main_article.search('ul.multiple.column5 li a')
 
-      names.each do |name|
-        if name
-          @name_list << name.text
-        end
-      end
-      pagination_start += 1
+    main_article = main_html_doc.css('article')
+    names = main_article.search('ul.multiple.column5 li a')
+    text_names = Array.new
+    names.each do |name|
+      text_names << name.text
     end
 
-  end
+    text_names.each do |name|
+      name.downcase!
+      name.gsub!(" ", "-")
+      name.gsub!("é", "e")
+      name.gsub!("è", "e")
+      name.gsub!("â", "a")
+      name.gsub!("ô", "o")
+      name.gsub!("'", "")
+      @name_list << name
 
-  @name_list.each do |name|
-    name.downcase!
-    name.gsub!(" ", "-")
-    name.gsub!("é", "e")
-    name.gsub!("è", "e")
-    name.gsub!("â", "a")
-    name.gsub!("ô", "o")
-    name.gsub!("'", "")
-  end
+      url_check = "#{@url}/n_#{name}"
 
-  # names_error = ["greard", "adele"]
-  # names_error.each do |name|
-  #   @name_list.delete(name)
-  # end
-  # binding.pry
+      oups = Nokogiri::HTML(open(url_check))
+
+      check_if_oups = oups.search('div.plusgros')
+      if check_if_oups
+        @name_list.delete(name)
+      end
+    end
+    pagination_start += 1
+  end
+  puts @name_list.size
 end
 
 scraper

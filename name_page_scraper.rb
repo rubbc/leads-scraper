@@ -7,8 +7,7 @@ require './scraper'
 def scraper
 
   @leads = Array.new
-  @name_list.delete('durne')
-  @name_list.each do |name|
+  @name_list.first(400).each do |name|
     url_name = "#{@url}/n_#{name}"
     html_doc = Nokogiri::HTML(open(url_name))
     cards = html_doc.search('article.cardlist section.card')
@@ -21,7 +20,7 @@ def scraper
       @leads << lead
     end
   end
-  # binding.pry
+
 end
 
 scraper
