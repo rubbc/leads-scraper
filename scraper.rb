@@ -6,7 +6,7 @@ require 'csv'
 def scraper
   @name_list = Array.new
 
-  @url = "https://annuaire.118000.fr/v_froncles_52"
+  @url = "https://annuaire.118000.fr/v_meriel_95"
   html_doc = Nokogiri::HTML(open(@url))
   article = html_doc.search('article')
   last_number_pagination = article.css('ul#pagination li:nth-last-child(2)').text.to_i
@@ -19,14 +19,23 @@ def scraper
   pagination_start = 1
 
   while pagination_start < (max_pagination + 1)
-    main_url = "https://annuaire.118000.fr/v_froncles_52/#{pagination_start}"
+    main_url = "https://annuaire.118000.fr/v_meriel_95/#{pagination_start}"
     main_html_doc = Nokogiri::HTML(open(main_url))
-    main_article = main_html_doc.css('article')
-    names = main_article.search('ul.multiple.column5 li a')
-    names.each do |name|
-      @name_list << name.text
+    plusgros = main_html_doc.css('div.plusgros')
+    if plusgros
+      pagination_start += 1
+    else
+      main_article = main_html_doc.css('article')
+      names = main_article.search('ul.multiple.column5 li a')
+
+      names.each do |name|
+        if name
+          @name_list << name.text
+        end
+      end
+      pagination_start += 1
     end
-    pagination_start += 1
+
   end
 
   @name_list.each do |name|
@@ -39,10 +48,10 @@ def scraper
     name.gsub!("'", "")
   end
 
-  names_error = ["greard", "adele"]
-  names_error.each do |name|
-    @name_list.delete(name)
-  end
+  # names_error = ["greard", "adele"]
+  # names_error.each do |name|
+  #   @name_list.delete(name)
+  # end
   # binding.pry
 end
 
