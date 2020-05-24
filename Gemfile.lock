@@ -7,6 +7,8 @@ GEM
     csv (3.1.2)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
+    global_phone_dbgen (1.0.0)
+      nokogiri (~> 1.5)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     linkedin-scraper (2.1.1)
@@ -49,6 +51,7 @@ PLATFORMS
 
 DEPENDENCIES
   csv
+  global_phone_dbgen
   linkedin-scraper
   nokogiri
   pry-byebug
